@@ -31,7 +31,7 @@ export default function RootLayout({
       >
         {/* Header */}
         <header className="flex items-center gap-4 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm px-6 py-3">
-          <Link href="/" className="">
+          <Link href="/" className="select-none opacity-90 hover:opacity-100 transition-opacity duration-200">
             <Image
               src="/jh.png"
               alt="JH"
@@ -41,11 +41,11 @@ export default function RootLayout({
               height={50}
             />
           </Link>
-          <h1 className="flex-1 text-xl font-extrabold">Diff Tool</h1>
+          <h1 className="flex-1 text-xl font-bold">Diff Tool</h1>
         </header>
         <main className="flex-1 min-h-0">{children}</main>
         <footer className="w-full flex justify-center">
-          <span className="text-xs opacity-30 pb-4">
+          <span className="text-xs opacity-30 pb-3">
             @ {new Date().getFullYear()}{" "}
             <a href="https://jhuang.ca" target="_blank">
               Jarrett Huang
