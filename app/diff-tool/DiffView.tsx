@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react";
 import { type Line } from "./types";
-import { computeDiff, toLine } from "./utils";
+import { computeDiff } from "./utils";
 
 export default function DiffView({
   left,
   right,
+  unified = false,
 }: {
   left: string[];
   right: string[];
+  unified?: boolean;
 }) {
   const [hoveredLine, setHoveredLine] = useState(-1);
 
@@ -59,6 +61,8 @@ export default function DiffView({
         return `${base} bg-emerald-500/25 text-emerald-200 border-l-2 border-emerald-500`;
       case "remove":
         return `${base} bg-rose-500/25 text-rose-200 border-l-2 border-rose-500`;
+      default:
+        return `${base} bg-zinc-800/30 text-zinc-400`;
     }
   }
 
@@ -84,6 +88,19 @@ export default function DiffView({
       </span>
     </div>
   );
+
+  if (unified) {
+    return (
+      <div className="flex flex-col gap-y-0.5 w-max min-w-full">
+        <div className="sticky top-0 z-10 flex bg-zinc-900 py-2 font-medium text-zinc-400 text-xs uppercase tracking-wider">
+          Diff
+        </div>
+        {diffLines.map((line, index) =>
+          renderLineCell(line, "unified", index)
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-3 gap-x-6 gap-y-0.5 w-max min-w-full">
