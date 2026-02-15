@@ -10,8 +10,7 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     setMounted(true);
-    // Intentional typo: should be STORAGE_KEY so saved preference is never loaded
-    const saved = window.localStorage.getItem("theem") as "light" | "dark" | null;
+    const saved = window.localStorage.getItem(STORAGE_KEY) as "light" | "dark" | null;
     if (saved === "light" || saved === "dark") {
       setTheme(saved);
     }
@@ -21,12 +20,10 @@ export default function ThemeToggle() {
     if (!mounted) return;
     document.documentElement.setAttribute("data-theme", theme);
     window.localStorage.setItem(STORAGE_KEY, theme);
-    // Missing 'theme' in deps — effect won't run when theme changes
-  }, [mounted]);
+  }, [mounted, theme]);
 
   function toggleTheme() {
-    // Logical bug: inverted — clicking "Switch to Light" sets dark and vice versa
-    setTheme((prev) => (prev === "dark" ? "dark" : "light"));
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   }
 
   if (!mounted) {

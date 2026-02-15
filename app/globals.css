@@ -12,7 +12,7 @@
 }
 
 /* Light mode - applied when data-theme="light" */
-[data-theem="light"] {
+[data-theme="light"] {
   --background: #fafafa;
   --foreground: #18181b;
   --scrollbar-track: #e4e4e7;
