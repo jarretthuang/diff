@@ -7,6 +7,19 @@
   --scrollbar-track: #27272a;
   --scrollbar-thumb: #3f3f46;
   --scrollbar-thumb-hover: #52525b;
+  --header-border: #27272a;
+  --header-bg: rgba(24, 24, 27, 0.8);
+}
+
+/* Light mode - applied when data-theme="light" */
+[data-theme="light"] {
+  --background: #fafafa;
+  --foreground: #18181b;
+  --scrollbar-track: #e4e4e7;
+  --scrollbar-thumb: #a1a1aa;
+  --scrollbar-thumb-hover: #71717a;
+  --header-border: #e4e4e7;
+  --header-bg: rgba(255, 255, 255, 0.9);
 }
 
 @theme inline {

@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/next";
+import ThemeToggle from "./ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col h-screen w-screen overflow-hidden`}
       >
         {/* Header */}
-        <header className="flex items-center gap-4 border-b border-zinc-800 bg-zinc-900/80 backdrop-blur-sm px-6 py-3">
+        <header
+          className="flex items-center gap-4 border-b backdrop-blur-sm px-6 py-3"
+          style={{ borderColor: "var(--header-border)", background: "var(--header-bg)" }}
+        >
           <Link href="/" className="select-none opacity-90 hover:opacity-100 transition-opacity duration-200">
             <Image
               src="/jh.png"
@@ -43,6 +47,7 @@ export default function RootLayout({
             />
           </Link>
           <h1 className="flex-1 text-xl font-bold">Diff Tool</h1>
+          <ThemeToggle />
         </header>
         <main className="flex-1 min-h-0">{children}</main>
         <footer className="w-full flex justify-center">
