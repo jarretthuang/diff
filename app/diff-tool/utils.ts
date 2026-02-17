@@ -122,8 +122,8 @@ function compareStrings(
 
   return {
     commonPrefix: left.slice(0, prefixEnd),
-    midLeft: left.slice(prefixEnd, left.length - suffixEnd + 1),
-    midRight: right.slice(prefixEnd, right.length - suffixEnd + 1),
+    midLeft: left.slice(prefixEnd, left.length - suffixEnd),
+    midRight: right.slice(prefixEnd, right.length - suffixEnd),
     commonSuffix: left.slice(left.length - suffixEnd),
   };
 }
