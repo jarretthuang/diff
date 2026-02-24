@@ -1,10 +1,71 @@
 import { LineType, Line, DiffLine } from "./types";
 
+interface CompressDiffOptions {
+  maxLines?: number;
+  contextLines?: number;
+}
+
 export function toLine(str: string, type: LineType): Line {
   return {
     content: str,
     type: type,
   };
+}
+
+export function compressLargeDiff(
+  diff: DiffLine[],
+  options: CompressDiffOptions = {}
+): DiffLine[] {
+  const maxLines = options.maxLines ?? 1200;
+  const contextLines = options.contextLines ?? 12;
+
+  if (diff.length <= maxLines) return diff;
+
+  const changedIndices: number[] = [];
+  for (let i = 0; i < diff.length; i++) {
+    if (diff[i].type !== "common") changedIndices.push(i);
+  }
+
+  const makePlaceholder = (hiddenCount: number): DiffLine => ({
+    content: `… ${hiddenCount} unchanged lines omitted …`,
+    type: "common",
+  });
+
+  // If everything is common, preserve beginning and end for quick scanning.
+  if (changedIndices.length === 0) {
+    const head = diff.slice(0, contextLines);
+    const tail = diff.slice(-contextLines);
+    const hidden = Math.max(0, diff.length - head.length - tail.length);
+    return hidden > 0 ? [...head, makePlaceholder(hidden), ...tail] : diff;
+  }
+
+  const ranges: Array<[number, number]> = [];
+  for (const index of changedIndices) {
+    const start = Math.max(0, index - contextLines);
+    const end = Math.min(diff.length - 1, index + contextLines);
+    const prev = ranges[ranges.length - 1];
+    if (!prev || start > prev[1] + 1) {
+      ranges.push([start, end]);
+    } else {
+      prev[1] = Math.max(prev[1], end);
+    }
+  }
+
+  const result: DiffLine[] = [];
+  let cursor = 0;
+  for (const [start, end] of ranges) {
+    if (start > cursor) {
+      result.push(makePlaceholder(start - cursor));
+    }
+    result.push(...diff.slice(start, end + 1));
+    cursor = end + 1;
+  }
+
+  if (cursor < diff.length) {
+    result.push(makePlaceholder(diff.length - cursor));
+  }
+
+  return result;
 }
 
 export function computeDiff(left: string[], right: string[]): DiffLine[] {

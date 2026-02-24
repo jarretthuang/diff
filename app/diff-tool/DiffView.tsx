@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { type Line } from "./types";
-import { computeDiff } from "./utils";
+import { computeDiff, compressLargeDiff } from "./utils";
 
 export default function DiffView({
   left,
@@ -14,7 +14,7 @@ export default function DiffView({
   const [hoveredLine, setHoveredLine] = useState(-1);
 
   const { leftLines, rightLines, diffLines } = useMemo(() => {
-    const d = computeDiff(left, right);
+    const d = compressLargeDiff(computeDiff(left, right));
     const l: Line[] = d.map((diffLine) => {
       return diffLine.originLeft !== undefined
         ? {
