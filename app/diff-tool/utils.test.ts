@@ -20,6 +20,26 @@ describe("computeDiff", () => {
     expect(diff.map((line) => line.content)).toEqual(["a", "x", "b"]);
     expect(diff.map((line) => line.type)).toEqual(["common", "add", "common"]);
   });
+
+  it("treats empty lines as equal in shared prefix and suffix", () => {
+    const left = ["", "body", ""];
+    const right = ["", "", ""];
+
+    const diff = computeDiff(left, right);
+
+    expect(diff.map((line) => line.type)).toEqual(["common", "remove", "add", "common"]);
+    expect(diff.map((line) => line.content)).toEqual(["", "body", "", ""]);
+  });
+
+  it("matches suffix using right-side indexing when lengths differ", () => {
+    const left = ["keep", "left-only", "tail"];
+    const right = ["keep", "tail"];
+
+    const diff = computeDiff(left, right);
+
+    expect(diff.map((line) => line.type)).toEqual(["common", "remove", "common"]);
+    expect(diff.map((line) => line.content)).toEqual(["keep", "left-only", "tail"]);
+  });
 });
 
 describe("compressLargeDiff", () => {

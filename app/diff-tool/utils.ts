@@ -163,8 +163,7 @@ function compareStrings(
 } {
   let prefixEnd = 0; // exclusive
   while (prefixEnd < left.length && prefixEnd < right.length) {
-    const currentStr = left[prefixEnd];
-    if (currentStr && currentStr === right[prefixEnd]) {
+    if (left[prefixEnd] === right[prefixEnd]) {
       prefixEnd++;
     } else {
       break;
@@ -172,9 +171,13 @@ function compareStrings(
   }
 
   let suffixEnd = 0; // exclusive
-  while (suffixEnd < left.length - prefixEnd && suffixEnd < right.length) {
-    const currentStr = left[left.length - 1 - suffixEnd];
-    if (currentStr && currentStr === right[left.length - 1 - suffixEnd]) {
+  while (
+    suffixEnd < left.length - prefixEnd &&
+    suffixEnd < right.length - prefixEnd
+  ) {
+    const leftIndex = left.length - 1 - suffixEnd;
+    const rightIndex = right.length - 1 - suffixEnd;
+    if (left[leftIndex] === right[rightIndex]) {
       suffixEnd++;
     } else {
       break;
