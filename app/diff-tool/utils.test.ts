@@ -58,6 +58,16 @@ describe("computeDiff", () => {
     expect(diff.some((line) => line.content === "anchor-left" && line.type === "remove")).toBe(true);
     expect(diff.some((line) => line.content === "anchor-right" && line.type === "add")).toBe(true);
   });
+
+  it("does not treat repeated lines as unique anchors", () => {
+    const left = ["x", "anchor", "x", "tail"];
+    const right = ["x", "anchor", "x", "tail", "added"];
+
+    const diff = computeDiff(left, right);
+
+    expect(diff.map((line) => line.type)).toEqual(["common", "common", "common", "common", "add"]);
+    expect(diff.at(-1)?.content).toBe("added");
+  });
 });
 
 describe("compressLargeDiff", () => {

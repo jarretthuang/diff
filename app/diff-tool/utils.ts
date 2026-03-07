@@ -193,23 +193,26 @@ function compareStrings(
 }
 
 function getUniqueStringIndices(strs: string[]): Map<string, number> {
-  const indicesMap = new Map<string, number[]>();
+  const stats = new Map<string, { count: number; firstIndex: number }>();
+
   for (let i = 0; i < strs.length; i++) {
     const str = strs[i];
-    const indices = indicesMap.get(str);
-    if (indices) {
-      indices.push(i);
+    const existing = stats.get(str);
+
+    if (existing) {
+      existing.count += 1;
     } else {
-      indicesMap.set(str, [i]);
+      stats.set(str, { count: 1, firstIndex: i });
     }
   }
 
   const result = new Map<string, number>();
-  indicesMap.forEach((value, key) => {
-    if (value.length === 1) {
-      result.set(key, value[0]);
+  stats.forEach((value, key) => {
+    if (value.count === 1) {
+      result.set(key, value.firstIndex);
     }
   });
+
   return result;
 }
 
