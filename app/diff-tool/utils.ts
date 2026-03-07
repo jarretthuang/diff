@@ -196,10 +196,15 @@ function getUniqueStringIndices(strs: string[]): Map<string, number> {
   const indicesMap = new Map<string, number[]>();
   for (let i = 0; i < strs.length; i++) {
     const str = strs[i];
-    indicesMap.set(str, [...(indicesMap.get(str) ?? []), i]);
+    const indices = indicesMap.get(str);
+    if (indices) {
+      indices.push(i);
+    } else {
+      indicesMap.set(str, [i]);
+    }
   }
 
-  const result = new Map();
+  const result = new Map<string, number>();
   indicesMap.forEach((value, key) => {
     if (value.length === 1) {
       result.set(key, value[0]);

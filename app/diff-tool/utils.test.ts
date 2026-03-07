@@ -40,6 +40,24 @@ describe("computeDiff", () => {
     expect(diff.map((line) => line.type)).toEqual(["common", "remove", "common"]);
     expect(diff.map((line) => line.content)).toEqual(["keep", "left-only", "tail"]);
   });
+
+  it("handles large repeated inputs while preserving the unique anchor", () => {
+    const left = [
+      ...Array.from({ length: 2000 }, () => "repeat"),
+      "anchor-left",
+      ...Array.from({ length: 2000 }, () => "repeat"),
+    ];
+    const right = [
+      ...Array.from({ length: 2000 }, () => "repeat"),
+      "anchor-right",
+      ...Array.from({ length: 2000 }, () => "repeat"),
+    ];
+
+    const diff = computeDiff(left, right);
+
+    expect(diff.some((line) => line.content === "anchor-left" && line.type === "remove")).toBe(true);
+    expect(diff.some((line) => line.content === "anchor-right" && line.type === "add")).toBe(true);
+  });
 });
 
 describe("compressLargeDiff", () => {
