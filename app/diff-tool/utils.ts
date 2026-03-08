@@ -78,7 +78,36 @@ export function compressLargeDiff(
     compressed = buildCompressedWithContext(context);
   }
 
-  return compressed;
+  if (compressed.length <= maxLines) {
+    return compressed;
+  }
+
+  if (maxLines <= 0) {
+    return [];
+  }
+
+  if (maxLines === 1) {
+    return [
+      {
+        content: `… ${compressed.length} lines omitted …`,
+        type: "common",
+      },
+    ];
+  }
+
+  const visibleSlots = maxLines - 1;
+  const headCount = Math.ceil(visibleSlots / 2);
+  const tailCount = visibleSlots - headCount;
+  const hiddenCount = Math.max(0, compressed.length - headCount - tailCount);
+
+  return [
+    ...compressed.slice(0, headCount),
+    {
+      content: `… ${hiddenCount} lines omitted …`,
+      type: "common",
+    },
+    ...compressed.slice(compressed.length - tailCount),
+  ];
 }
 
 export function computeDiff(left: string[], right: string[]): DiffLine[] {

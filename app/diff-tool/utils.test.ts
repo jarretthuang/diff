@@ -126,4 +126,18 @@ describe("compressLargeDiff", () => {
     expect(compressed.some((line) => line.content.includes("unchanged lines omitted"))).toBe(true);
     expect(compressed.length).toBeLessThanOrEqual(10);
   });
+
+  it("hard caps output when changed lines exceed maxLines", () => {
+    const diff = Array.from({ length: 40 }, (_, i) => ({
+      content: `changed-${i}`,
+      type: (i % 2 === 0 ? "remove" : "add") as const,
+    }));
+
+    const compressed = compressLargeDiff(diff, { maxLines: 12, contextLines: 2 });
+
+    expect(compressed.length).toBe(12);
+    expect(compressed.some((line) => line.content.includes("lines omitted"))).toBe(true);
+    expect(compressed[0].content).toBe("changed-0");
+    expect(compressed.at(-1)?.content).toBe("changed-39");
+  });
 });
