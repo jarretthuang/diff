@@ -68,6 +68,15 @@ describe("computeDiff", () => {
     expect(diff.map((line) => line.type)).toEqual(["common", "common", "common", "common", "add"]);
     expect(diff.at(-1)?.content).toBe("added");
   });
+
+  it("treats CRLF and LF lines as equivalent when diffing", () => {
+    const left = ["const a = 1;\r", "return a;\r"];
+    const right = ["const a = 1;", "return a;"];
+
+    const diff = computeDiff(left, right);
+
+    expect(diff.map((line) => line.type)).toEqual(["common", "common"]);
+  });
 });
 
 describe("compressLargeDiff", () => {

@@ -165,6 +165,10 @@ export function computeDiff(left: string[], right: string[]): DiffLine[] {
   ];
 }
 
+function normalizeForCompare(line: string): string {
+  return line.endsWith("\r") ? line.slice(0, -1) : line;
+}
+
 function compareStrings(
   left: string[],
   right: string[]
@@ -176,7 +180,7 @@ function compareStrings(
 } {
   let prefixEnd = 0; // exclusive
   while (prefixEnd < left.length && prefixEnd < right.length) {
-    if (left[prefixEnd] === right[prefixEnd]) {
+    if (normalizeForCompare(left[prefixEnd]) === normalizeForCompare(right[prefixEnd])) {
       prefixEnd++;
     } else {
       break;
@@ -190,7 +194,7 @@ function compareStrings(
   ) {
     const leftIndex = left.length - 1 - suffixEnd;
     const rightIndex = right.length - 1 - suffixEnd;
-    if (left[leftIndex] === right[rightIndex]) {
+    if (normalizeForCompare(left[leftIndex]) === normalizeForCompare(right[rightIndex])) {
       suffixEnd++;
     } else {
       break;
@@ -209,13 +213,13 @@ function getUniqueStringIndices(strs: string[]): Map<string, number> {
   const stats = new Map<string, { count: number; firstIndex: number }>();
 
   for (let i = 0; i < strs.length; i++) {
-    const str = strs[i];
-    const existing = stats.get(str);
+    const normalized = normalizeForCompare(strs[i]);
+    const existing = stats.get(normalized);
 
     if (existing) {
       existing.count += 1;
     } else {
-      stats.set(str, { count: 1, firstIndex: i });
+      stats.set(normalized, { count: 1, firstIndex: i });
     }
   }
 
