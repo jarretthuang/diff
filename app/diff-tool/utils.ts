@@ -39,33 +39,46 @@ export function compressLargeDiff(
     return hidden > 0 ? [...head, makePlaceholder(hidden), ...tail] : diff;
   }
 
-  const ranges: Array<[number, number]> = [];
-  for (const index of changedIndices) {
-    const start = Math.max(0, index - contextLines);
-    const end = Math.min(diff.length - 1, index + contextLines);
-    const prev = ranges[ranges.length - 1];
-    if (!prev || start > prev[1] + 1) {
-      ranges.push([start, end]);
-    } else {
-      prev[1] = Math.max(prev[1], end);
+  const buildCompressedWithContext = (context: number): DiffLine[] => {
+    const ranges: Array<[number, number]> = [];
+    for (const index of changedIndices) {
+      const start = Math.max(0, index - context);
+      const end = Math.min(diff.length - 1, index + context);
+      const prev = ranges[ranges.length - 1];
+      if (!prev || start > prev[1] + 1) {
+        ranges.push([start, end]);
+      } else {
+        prev[1] = Math.max(prev[1], end);
+      }
     }
-  }
 
-  const result: DiffLine[] = [];
-  let cursor = 0;
-  for (const [start, end] of ranges) {
-    if (start > cursor) {
-      result.push(makePlaceholder(start - cursor));
+    const result: DiffLine[] = [];
+    let cursor = 0;
+    for (const [start, end] of ranges) {
+      if (start > cursor) {
+        result.push(makePlaceholder(start - cursor));
+      }
+      result.push(...diff.slice(start, end + 1));
+      cursor = end + 1;
     }
-    result.push(...diff.slice(start, end + 1));
-    cursor = end + 1;
+
+    if (cursor < diff.length) {
+      result.push(makePlaceholder(diff.length - cursor));
+    }
+
+    return result;
+  };
+
+  let context = contextLines;
+  let compressed = buildCompressedWithContext(context);
+
+  // If the compressed output is still too long, reduce context adaptively.
+  while (compressed.length > maxLines && context > 0) {
+    context -= 1;
+    compressed = buildCompressedWithContext(context);
   }
 
-  if (cursor < diff.length) {
-    result.push(makePlaceholder(diff.length - cursor));
-  }
-
-  return result;
+  return compressed;
 }
 
 export function computeDiff(left: string[], right: string[]): DiffLine[] {

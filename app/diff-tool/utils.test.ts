@@ -100,4 +100,21 @@ describe("compressLargeDiff", () => {
     expect(compressed.at(-1)?.content).toBe("same-99");
     expect(compressed.length).toBe(7);
   });
+
+  it("shrinks context when initial compression is still above maxLines", () => {
+    const diff = [
+      ...Array.from({ length: 12 }, (_, i) => ({ content: `same-${i}`, type: "common" as const })),
+      { content: "remove-a", type: "remove" as const },
+      ...Array.from({ length: 12 }, (_, i) => ({ content: `mid-${i}`, type: "common" as const })),
+      { content: "add-b", type: "add" as const },
+      ...Array.from({ length: 12 }, (_, i) => ({ content: `tail-${i}`, type: "common" as const })),
+    ];
+
+    const compressed = compressLargeDiff(diff, { maxLines: 10, contextLines: 4 });
+
+    expect(compressed.some((line) => line.content === "remove-a")).toBe(true);
+    expect(compressed.some((line) => line.content === "add-b")).toBe(true);
+    expect(compressed.some((line) => line.content.includes("unchanged lines omitted"))).toBe(true);
+    expect(compressed.length).toBeLessThanOrEqual(10);
+  });
 });
