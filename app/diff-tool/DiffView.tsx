@@ -78,7 +78,7 @@ export default function DiffView({
         {line.type === "remove" && <span>−</span>}
       </div>
       <span
-        className="flex-1 min-w-0 whitespace-nowrap"
+        className="flex-1 min-w-0 whitespace-pre [tab-size:2]"
         style={{
           color: line.type === "void" ? "transparent" : undefined,
           userSelect: line.type === "void" ? "none" : "auto",
